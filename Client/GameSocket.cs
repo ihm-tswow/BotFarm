@@ -10,6 +10,8 @@ namespace Client
     public abstract class GameSocket : IDisposable
     {
         const int DefaultBufferSize = 128;
+
+        int cur = 0;
         public GameSocket()
         {
             SocketArgs = new SocketAsyncEventArgs();
@@ -67,12 +69,19 @@ namespace Client
         protected EventHandler<SocketAsyncEventArgs> SocketCallback;
         private void CallSocketCallback(object sender, SocketAsyncEventArgs e)
         {
+            cur++;
+            if (cur > 1000)
+                return;
             if (SocketCallback != null)
                 SocketCallback(sender, e);
         }
 
         protected void ReceiveAsync()
         {
+            if (connection == null || connection.Client == null)
+            {
+                return;
+            }
             if (!connection.Client.ReceiveAsync(SocketArgs))
                 CallSocketCallback(this, SocketArgs);
         }
@@ -106,6 +115,10 @@ namespace Client
                         Disposed = true;
                         connection.Close();
                     }
+                    catch(Exception)
+                    {
+
+                    }
                 }
                 else
                 {
@@ -117,13 +130,20 @@ namespace Client
 
         void SocketShutdownCallback(IAsyncResult result)
         {
-            int size = connection.Client.EndReceive(result);
-            if (size > 0)
-                connection.Client.BeginReceive(_receiveData, 0, _receiveData.Length, SocketFlags.None, SocketShutdownCallback, null);
-            else
+            try
             {
-                Disposed = true;
-                connection.Close();
+                int size = connection.Client.EndReceive(result);
+                if (size > 0)
+                    connection.Client.BeginReceive(_receiveData, 0, _receiveData.Length, SocketFlags.None, SocketShutdownCallback, null);
+                else
+                {
+                    Disposed = true;
+                    connection.Close();
+                }
+            }
+            catch(Exception)
+            {
+
             }
         }
 

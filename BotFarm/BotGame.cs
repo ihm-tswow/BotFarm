@@ -196,7 +196,19 @@ namespace BotFarm
 
         public override void NoCharactersFound()
         {
-            CreateCharacter(Race.Human, Class.Priest);
+            int race = new Random().Next() % 3;
+            switch (race)
+            {
+                case 0:
+                    CreateCharacter(Race.Human, Class.Warrior);
+                    break;
+                case 1:
+                    CreateCharacter(Race.Dwarf, Class.Warrior);
+                    break;
+                case 2:
+                    CreateCharacter(Race.Nightelf, Class.Warrior);
+                    break;
+            }
         }
 
         public override void CharacterCreationFailed(CommandDetail result)

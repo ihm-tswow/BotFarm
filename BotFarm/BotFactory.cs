@@ -114,7 +114,7 @@ namespace BotFarm
             Log("Creating new bot");
 
             string username = "BOT" + randomGenerator.Next();
-            string password = randomGenerator.Next().ToString();
+            string password = username;
             lock(factoryGame)
                 factoryGame.DoSayChat(".account create " + username + " " + password);
 

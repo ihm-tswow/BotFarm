@@ -118,7 +118,14 @@ namespace Client.Authentication.Network
 
         void HandleRealmLogonChallenge()
         {
-            ServerAuthChallenge challenge = new ServerAuthChallenge(new BinaryReader(connection.GetStream()));
+            ServerAuthChallenge challenge;
+            try
+            {
+                challenge = new ServerAuthChallenge(new BinaryReader(connection.GetStream()));
+            } catch (Exception e)
+            {
+                return;
+            }
 
             switch (challenge.error)
             {
@@ -385,6 +392,10 @@ namespace Client.Authentication.Network
         {
             try
             {
+                if (this.connection == null || this.connection.Client == null)
+                {
+                    return;
+                }
                 this.connection.Client.BeginReceive
                 (
                     ReceiveData, 0, 1,    // buffer and buffer bounds
@@ -392,6 +403,10 @@ namespace Client.Authentication.Network
                     this.ReadCallback,    // callback to handle completion
                     null                // state object
                 );
+            }
+            catch(NullReferenceException)
+            {
+
             }
             catch(Exception ex)
             {
@@ -438,6 +453,10 @@ namespace Client.Authentication.Network
             catch(EndOfStreamException)
             {
                 Game.Reconnect();
+            }
+            catch(Exception)
+            {
+
             }
         }
 
