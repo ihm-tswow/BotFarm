@@ -196,7 +196,7 @@ namespace BotFarm
 
         public override void NoCharactersFound()
         {
-            int race = new Random().Next() % 3;
+            int race = new Random().Next() % 1;
             switch (race)
             {
                 case 0:

@@ -41,20 +41,7 @@ namespace BotFarm
             logger = TextWriter.Synchronized(new StreamWriter(logPath));
             logger.WriteLine("Starting BotFactory");
 
-            if (!File.Exists(botsInfosPath))
-                botInfos = new List<BotInfo>();
-            else using (StreamReader sr = new StreamReader(botsInfosPath))
-            {
-                try
-                {
-                    XmlSerializer serializer = new XmlSerializer(typeof(List<BotInfo>));
-                    botInfos = (List<BotInfo>)serializer.Deserialize(sr);
-                }
-                catch(InvalidOperationException)
-                {
-                    botInfos = new List<BotInfo>();
-                }
-            }
+            botInfos = new List<BotInfo>();
 
             foreach (BotBehaviorSettings behavior in Settings.Default.Behaviors)
                 botBehaviors[behavior.Name] = behavior;

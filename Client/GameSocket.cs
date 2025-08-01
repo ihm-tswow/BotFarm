@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 using Client.World.Network;
 
 namespace Client
@@ -69,9 +70,6 @@ namespace Client
         protected EventHandler<SocketAsyncEventArgs> SocketCallback;
         private void CallSocketCallback(object sender, SocketAsyncEventArgs e)
         {
-            cur++;
-            if (cur > 1000)
-                return;
             if (SocketCallback != null)
                 SocketCallback(sender, e);
         }
@@ -83,7 +81,9 @@ namespace Client
                 return;
             }
             if (!connection.Client.ReceiveAsync(SocketArgs))
-                CallSocketCallback(this, SocketArgs);
+            {
+                Task.Run(() => CallSocketCallback(this, SocketArgs));
+            }
         }
 
         public abstract void Start();
